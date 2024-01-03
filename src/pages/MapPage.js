@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import * as L from 'leaflet';
+import React, { useState, useEffect } from 'react';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -15,43 +15,74 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
+  const [markers, setMarkers] = useState([]);
+  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+  const [markerName, setMarkerName] = useState('');
+  const [map, setMap] = useState(null);
 
   useEffect(() => {
-    const map = L.map('map').setView([51.1079, 17.0385], 13); // Default center: Wrocław, Poland
+    // Initialize the map
+    const newMap = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(newMap);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(map);
+    // Add event listener for double-click on the map
+    newMap.on('dblclick', handleMapDoubleClick);
 
-    if ('geolocation' in navigator) {
-      const geoOptions = {
-        enableHighAccuracy: false,
-        timeout: 5000,
-        maximumAge: Infinity,
-      };
+    setMap(newMap);
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-
-          // add the marker and move the view there
-          map.setView([latitude, longitude], 13);
-          L.marker([latitude, longitude]).addTo(map)
-            .openPopup();
-        },
-        (error) => {
-          console.error(`Error getting user location: ${error.message}`);
-        },
-        geoOptions
-      );
-    } else {
-      console.error('Geolocation is not supported by your browser.');
-    }
+    // Clean up on component unmount
+    return () => {
+      newMap.off('dblclick', handleMapDoubleClick);
+      newMap.remove();
+    };
   }, []);
 
+  const handleMapDoubleClick = (e) => {
+    const { lat, lng } = e.latlng;
+    setCoordinates({ lat, lng });
+  };
+
+  const handleMarkerNameChange = (e) => {
+    setMarkerName(e.target.value);
+  };
+
+  const handleMarkerAppend = () => {
+    if (!map) return;
+
+    const marker = L.marker([coordinates.lat, coordinates.lng]).addTo(map);
+
+    marker.bindPopup(markerName || '').openPopup(); // Display name as a popup
+    setMarkers((prevMarkers) => [...prevMarkers, { marker, name: markerName }]);
+
+    // Clear the input after adding the marker
+    setMarkerName('');
+  };
+
   return (
-    <div>
-        <div id="map" style={{ height: '100vh', width: '100%' }}></div>
+    <div className="map-container">
+      <div id="map" className="map"></div>
+      <div className="form-container">
+        <form>
+          <input type="text" value={markerName} onChange={handleMarkerNameChange} />
+          <label>Marker Name:</label>
+
+          <div>Latitude: {coordinates.lat}</div>
+          <div>Longitude: {coordinates.lng}</div>
+
+          <button type="button" onClick={handleMarkerAppend}>
+            Add Marker
+          </button>
+        </form>
+        <div className="saved-markers">
+          <h2>Saved Markers</h2>
+          {markers.map((markerObj, index) => (
+            <div key={index}>
+              <strong>{markerObj.name || 'Unnamed Marker'}:</strong>{' '}
+              {markerObj.marker.getLatLng().toString()}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
