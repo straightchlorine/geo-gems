@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 
+import 'leaflet/dist/leaflet.css';
 import { Form, Button } from 'react-bootstrap';
 
+// Fix for default icon markers, on firefox there
+// seems to be a problem.
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
@@ -17,7 +19,8 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
-  const [markers, setMarkers] = useState([]);
+  // States for the map
+  const [markers, setMarkers] = useState([]); 
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [markerName, setMarkerName] = useState('');
   const [map, setMap] = useState(null);
@@ -27,19 +30,18 @@ const MapPage = () => {
     const newMap = L.map('map').setView([0, 0], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(newMap);
 
-    // Add event listener for double-click on the map
-    newMap.on('dblclick', handleMapDoubleClick);
-
+    // Add event listener for click on the map
+    newMap.on('click', handleMapClick);
     setMap(newMap);
 
     // Clean up on component unmount
     return () => {
-      newMap.off('dblclick', handleMapDoubleClick);
+      newMap.off('click', handleMapClick);
       newMap.remove();
     };
   }, []);
 
-  const handleMapDoubleClick = (e) => {
+  const handleMapClick = (e) => {
     const { lat, lng } = e.latlng;
     setCoordinates({ lat, lng });
   };
@@ -57,7 +59,11 @@ const MapPage = () => {
     marker.bindPopup(markerName || defaultName).openPopup();
     setMarkers((prevMarkers) => [...prevMarkers, { marker, name: markerName }]);
 
+    // After creating the marker, clearing the coordinates,
+    // so that the next marker can't be created on the same coords
+    // and so that the user knows that the marker was created
     setCoordinates({ lat: null, lng: null })
+
     // Clear the input after adding the marker
     setMarkerName('');
   };
@@ -70,7 +76,7 @@ const MapPage = () => {
   };
 
 return (
-    <div className="map-container">
+    <div className="map-container" >
       <div id="map" className="map"></div>
       <div className="form-container">
         <Form>
@@ -99,7 +105,7 @@ return (
           <h2>Ulubione lokalizacje:</h2>
           {markers.map((markerObj, index) => (
             <div key={index} onClick={() => handleMarkerClick(markerObj)} className="saved-marker">
-              <strong>{markerObj.name || `Marker ${index + 1}`}:</strong>{' '}
+              <strong>{markerObj.name || `Miejsce ${index + 1}`}:</strong>{' '}
               {Math.round(markerObj.marker.getLatLng().lat * 100) / 100}, {Math.round(markerObj.marker.getLatLng().lng * 100) / 100}{' '}
             </div>
           ))}
