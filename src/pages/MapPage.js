@@ -51,7 +51,8 @@ const MapPage = () => {
 
     const marker = L.marker([coordinates.lat, coordinates.lng]).addTo(map);
 
-    marker.bindPopup(markerName || '').openPopup(); // Display name as a popup
+    const defaultName = `Marker ${markers.length + 1}`;
+    marker.bindPopup(markerName || defaultName).openPopup();
     setMarkers((prevMarkers) => [...prevMarkers, { marker, name: markerName }]);
 
     // Clear the input after adding the marker
@@ -63,22 +64,31 @@ const MapPage = () => {
       <div id="map" className="map"></div>
       <div className="form-container">
         <form>
+          <label>Nazwa:</label>
           <input type="text" value={markerName} onChange={handleMarkerNameChange} />
-          <label>Marker Name:</label>
 
-          <div>Latitude: {coordinates.lat}</div>
-          <div>Longitude: {coordinates.lng}</div>
+          <div>
+            <div>
+              <div>Szerokość geograficzna: </div>
+              <div>{Math.round(coordinates.lat * 100) / 100}</div>
+            </div>
+            <div>
+              <div>Długość geograficzna: </div>
+              <div>{Math.round(coordinates.lng * 100) / 100}</div>
+            </div>
+          </div>
 
+          <br></br>
           <button type="button" onClick={handleMarkerAppend}>
-            Add Marker
+            Dodaj do ulubionych!
           </button>
         </form>
         <div className="saved-markers">
-          <h2>Saved Markers</h2>
+          <h2>Ulubione lokalizacje:</h2>
           {markers.map((markerObj, index) => (
             <div key={index}>
-              <strong>{markerObj.name || 'Unnamed Marker'}:</strong>{' '}
-              {markerObj.marker.getLatLng().toString()}
+              <strong>{markerObj.name || `Marker ${index + 1}`}:</strong>{' '}
+              {Math.round(markerObj.marker.getLatLng().lat * 100) / 100}, {Math.round(markerObj.marker.getLatLng().lng * 100) / 100}{' '}
             </div>
           ))}
         </div>
