@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+import { Form, Button } from 'react-bootstrap';
+
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
@@ -55,6 +57,7 @@ const MapPage = () => {
     marker.bindPopup(markerName || defaultName).openPopup();
     setMarkers((prevMarkers) => [...prevMarkers, { marker, name: markerName }]);
 
+    setCoordinates({ lat: null, lng: null })
     // Clear the input after adding the marker
     setMarkerName('');
   };
@@ -66,30 +69,32 @@ const MapPage = () => {
     map.setView(marker.getLatLng(), map.getZoom());
   };
 
-  return (
+return (
     <div className="map-container">
       <div id="map" className="map"></div>
       <div className="form-container">
-        <form>
-          <label>Nazwa:</label>
-          <input type="text" value={markerName} onChange={handleMarkerNameChange} />
+        <Form>
+          <Form.Group controlId="markerName">
+            <Form.Label>Nazwa:</Form.Label>
+            <Form.Control type="text" value={markerName} onChange={handleMarkerNameChange} />
+          </Form.Group>
 
           <div>
             <div>
               <div>Szerokość geograficzna: </div>
-              <div>{Math.round(coordinates.lat * 100) / 100}</div>
+              <div>{coordinates.lat ? Math.round(coordinates.lat * 100) / 100 : '-'}</div>
             </div>
             <div>
               <div>Długość geograficzna: </div>
-              <div>{Math.round(coordinates.lng * 100) / 100}</div>
+              <div>{coordinates.lng ? Math.round(coordinates.lng * 100) / 100 : '-'}</div>
             </div>
           </div>
 
-          <br></br>
-          <button type="button" onClick={handleMarkerAppend}>
+          <br />
+          <Button variant="primary" type="button" onClick={handleMarkerAppend}>
             Dodaj do ulubionych!
-          </button>
-        </form>
+          </Button>
+        </Form>
         <div className="saved-markers">
           <h2>Ulubione lokalizacje:</h2>
           {markers.map((markerObj, index) => (
