@@ -59,6 +59,13 @@ const MapPage = () => {
     setMarkerName('');
   };
 
+  const handleMarkerClick = (markerObj) => {
+    if (!map) return;
+
+    const { marker } = markerObj;
+    map.setView(marker.getLatLng(), map.getZoom());
+  };
+
   return (
     <div className="map-container">
       <div id="map" className="map"></div>
@@ -86,7 +93,7 @@ const MapPage = () => {
         <div className="saved-markers">
           <h2>Ulubione lokalizacje:</h2>
           {markers.map((markerObj, index) => (
-            <div key={index}>
+            <div key={index} onClick={() => handleMarkerClick(markerObj)} className="saved-marker">
               <strong>{markerObj.name || `Marker ${index + 1}`}:</strong>{' '}
               {Math.round(markerObj.marker.getLatLng().lat * 100) / 100}, {Math.round(markerObj.marker.getLatLng().lng * 100) / 100}{' '}
             </div>
