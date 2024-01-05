@@ -4,23 +4,25 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Form, Button } from 'react-bootstrap';
 
-// Fix for default icon markers, on firefox there
+// Fix for default icon markers, on Firefox there
 // seems to be a problem.
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
+// Create a default icon for Leaflet markers
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [24, 36],
-    iconAnchor: [12, 36]
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [24, 36],
+  iconAnchor: [12, 36]
 });
 
+// Set the default icon for all markers
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
   // States for the map
-  const [markers, setMarkers] = useState([]); 
+  const [markers, setMarkers] = useState([]);
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [markerName, setMarkerName] = useState('');
   const [map, setMap] = useState(null);
@@ -34,12 +36,32 @@ const MapPage = () => {
     newMap.on('click', handleMapClick);
     setMap(newMap);
 
+    // Load markers from localStorage on component mount
+    const savedMarkers = JSON.parse(localStorage.getItem('markers')) || [];
+
+    setMarkers([]);
+    // Add existing markers to the map
+    savedMarkers.forEach(({ lat, lng, name }) => {
+      const marker = L.marker([lat, lng]).addTo(newMap);
+      marker.bindPopup(name);
+      setMarkers((prevMarkers) => [...prevMarkers, { marker, name: name }]);
+    });
+
     // Clean up on component unmount
     return () => {
       newMap.off('click', handleMapClick);
       newMap.remove();
     };
   }, []);
+
+  useEffect(() => {
+    // Save markers to localStorage whenever the markers state changes
+    const basicMarkers = [];
+    markers.forEach(({ marker, name }) => {
+      basicMarkers.push({ lat: marker.getLatLng().lat, lng: marker.getLatLng().lng, name });
+    });
+    localStorage.setItem('markers', JSON.stringify(basicMarkers));
+  }, [markers]);
 
   const handleMapClick = (e) => {
     const { lat, lng } = e.latlng;
@@ -53,16 +75,19 @@ const MapPage = () => {
   const handleMarkerAppend = () => {
     if (!map) return;
 
+    // Create a new marker and add it to the map
     const marker = L.marker([coordinates.lat, coordinates.lng]).addTo(map);
 
+    // Create a default name for the marker if no name is provided
     const defaultName = `Marker ${markers.length + 1}`;
     marker.bindPopup(markerName || defaultName).openPopup();
+
+    // Update the markers state with the new marker and its name
     setMarkers((prevMarkers) => [...prevMarkers, { marker, name: markerName }]);
 
-    // After creating the marker, clearing the coordinates,
-    // so that the next marker can't be created on the same coords
-    // and so that the user knows that the marker was created
-    setCoordinates({ lat: null, lng: null })
+    // After creating the marker, clear the coordinates;
+    // purely for visual feedback.
+    setCoordinates({ lat: null, lng: null });
 
     // Clear the input after adding the marker
     setMarkerName('');
@@ -71,12 +96,13 @@ const MapPage = () => {
   const handleMarkerClick = (markerObj) => {
     if (!map) return;
 
+    // Center the map on the clicked marker
     const { marker } = markerObj;
     map.setView(marker.getLatLng(), map.getZoom());
   };
 
-return (
-    <div className="map-container" >
+  return (
+    <div className="map-container">
       <div id="map" className="map"></div>
       <div className="form-container">
         <Form>
