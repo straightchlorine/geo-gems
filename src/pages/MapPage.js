@@ -80,10 +80,10 @@ const MapPage = () => {
 
     // Create a default name for the marker if no name is provided
     const defaultName = `Marker ${markers.length + 1}`;
-    marker.bindPopup(markerName || defaultName).openPopup();
+    marker.bindPopup(markerName || defaultName);
 
     // Update the markers state with the new marker and its name
-    setMarkers((prevMarkers) => [...prevMarkers, { marker, name: markerName }]);
+    setMarkers((prevMarkers) => [...prevMarkers, { marker, name: markerName || defaultName }]);
 
     // After creating the marker, clear the coordinates;
     // purely for visual feedback.
@@ -101,17 +101,20 @@ const MapPage = () => {
     map.setView(marker.getLatLng(), map.getZoom());
   };
 
-  return (
-    <div className="map-container">
-      <div id="map" className="map"></div>
+return (
+  <div className='container'>
+    <div className="main-container">
+      <div className="map-container">
+        <div id="map" className="map"></div>
+      </div>
       <div className="form-container">
         <Form>
           <Form.Group controlId="markerName">
-            <Form.Label>Nazwa:</Form.Label>
-            <Form.Control type="text" value={markerName} onChange={handleMarkerNameChange} />
-          </Form.Group>
+          <Form.Label>Nazwa:</Form.Label>
+          <Form.Control type="text" value={markerName} onChange={handleMarkerNameChange} />
+        </Form.Group>
 
-          <div>
+          <div className="coordinates-info">
             <div>
               <div>Szerokość geograficzna: </div>
               <div>{coordinates.lat ? Math.round(coordinates.lat * 100) / 100 : '-'}</div>
@@ -122,23 +125,34 @@ const MapPage = () => {
             </div>
           </div>
 
-          <br />
-          <Button variant="primary" type="button" onClick={handleMarkerAppend}>
+          <Button id='favouritesButton' variant="primary" type="button" onClick={handleMarkerAppend}>
             Dodaj do ulubionych!
           </Button>
+
         </Form>
+
         <div className="saved-markers">
-          <h2>Ulubione lokalizacje:</h2>
-          {markers.map((markerObj, index) => (
-            <div key={index} onClick={() => handleMarkerClick(markerObj)} className="saved-marker">
-              <strong>{markerObj.name || `Miejsce ${index + 1}`}:</strong>{' '}
-              {Math.round(markerObj.marker.getLatLng().lat * 100) / 100}, {Math.round(markerObj.marker.getLatLng().lng * 100) / 100}{' '}
-            </div>
-          ))}
+        <h2>Ulubione lokalizacje:</h2>
+          <div className="saved-list">
+            {markers.slice().reverse().map((markerObj, index) => (
+              <div
+              key={index}
+              onClick={() => handleMarkerClick(markerObj)}
+              className="saved-marker card"
+              >
+              <div className="card-body">
+              <strong>{markerObj.name}:</strong>{' '}
+              {Math.round(markerObj.marker.getLatLng().lat * 100) / 100},{' '}
+              {Math.round(markerObj.marker.getLatLng().lng * 100) / 100}
+              </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default MapPage;
