@@ -31,22 +31,30 @@ const MapPage = () => {
   const [map, setMap] = useState(null);
 
   const handleGeolocation = (map) => {
+    // Dismiss any existing notifications
+    toast.dismiss();
+
+    // Show a loading notification
+    const loadingNotificationId = toast.info('Trwa pobieranie lokalizacji użytkownika...',{autoClose: false});
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           if (map) {
             map.setView([latitude, longitude], 12); // You can adjust the zoom level (12 in this case)
+            toast.dismiss(loadingNotificationId);
             toast.success('Geolokacjizacja zakończona sukcesem!');
           }
         },
         (error) => {
           console.error('Error getting geolocation:', error.message);
-          toast.error('Niestety, podczas geolokalizacji wystąpiły problemy...');
+          toast.dismiss(loadingNotificationId);
         }
       );
     } else {
       console.error('Geolocation is not supported by your browser or map is not initialized.');
+      toast.dismiss(loadingNotificationId);
       toast.error('Twoja przeglądarka nie obsługuję geolokalizacji.');
     }
   };
