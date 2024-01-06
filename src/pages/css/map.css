@@ -1,0 +1,80 @@
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.main-container {
+  display: flex;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.map-container {
+  flex: 3; /* 75% of the space */
+  justify-content: space-between;
+  padding-right: 10px;
+}
+
+.map {
+  flex: 1;
+  height: 91vh;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.form-container {
+  flex: 1; /* 25% of the space */
+  height: 91vh;
+}
+
+.marker-form {
+  margin-bottom: 20px;
+}
+
+.saved-list {
+  max-height: 57vh;
+  height: 57vh;
+  overflow-y: auto;
+  background-color: #e8e9ea;;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.coordinates-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+}
+
+.saved-markers {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.saved-marker {
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.saved-marker:hover {
+  background-color: #e2e6ea;
+}
+
+#favouritesButton {
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* general markers */
+
+label {
+  margin-bottom: 8px;
+}
+
+input {
+  margin-bottom: 16px;
+}
