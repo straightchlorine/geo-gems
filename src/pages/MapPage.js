@@ -38,12 +38,15 @@ const MapPage = () => {
 
     // Load markers from localStorage on component mount
     const savedMarkers = JSON.parse(localStorage.getItem('markers')) || [];
-
     setMarkers([]);
+
     // Add existing markers to the map
     savedMarkers.forEach(({ lat, lng, name }) => {
       const marker = L.marker([lat, lng]).addTo(newMap);
-      marker.bindPopup(name);
+      
+      var popup = L.popup({ offset: L.point(0, -30) }).setLatLng([lat, lng]).setContent(name)
+      marker.bindPopup(popup);
+
       setMarkers((prevMarkers) => [...prevMarkers, { marker, name: name }]);
     });
 
@@ -62,6 +65,28 @@ const MapPage = () => {
     });
     localStorage.setItem('markers', JSON.stringify(basicMarkers));
   }, [markers]);
+
+  const handleGeolocation = () => {
+    if (navigator.geolocation && map) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          if (map) {
+            map.setView([latitude, longitude], 12); // You can adjust the zoom level (12 in this case)
+          }
+        },
+        (error) => {
+          console.error('Error getting geolocation:', error.message);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by your browser or map is not initialized.');
+    }
+  };
+
+  useEffect(() => {
+    handleGeolocation(); // Automatically ask for geolocation when the component mounts
+  }, [map]);
 
   const handleMapClick = (e) => {
     const { lat, lng } = e.latlng;
