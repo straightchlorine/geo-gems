@@ -58,7 +58,7 @@ function ContactPage() {
           />
         </Form.Group>
 
-        <Button id='submit-button' variant="primary" type="submit" >
+        <Button className='mt-4' id='submit-button' variant="primary" type="submit" >
           Wyślij!
         </Button>
       </Form>

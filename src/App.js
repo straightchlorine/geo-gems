@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import './app.css';
 
 import HomePage from './pages/HomePage';
 import MapPage from './pages/MapPage';
@@ -13,8 +13,8 @@ function App() {
       <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <Link className="navbar-brand" to="/">
-            <img src="original.jpg" id='icon' width="32" height="32" className="mr-2 align-top" />
-            GeoGems
+            <img src="original.jpg" id='icon' width="32" height="32" className="align-top" />
+            <strong>GeoGems</strong>
           </Link>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
