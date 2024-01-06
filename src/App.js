@@ -13,7 +13,7 @@ function App() {
       <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <Link className="navbar-brand" to="/">
-            <img src="geogem32x32.jpg" id='icon' width="32" height="32" className="mr-2 align-top" />
+            <img src="original.jpg" id='icon' width="32" height="32" className="mr-2 align-top" />
             GeoGems
           </Link>
           <div className="collapse navbar-collapse">
