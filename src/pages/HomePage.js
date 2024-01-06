@@ -4,7 +4,9 @@ import '../HomePage.css';
 function HomePage() {
   return (
     <div className="homepage container-fluid d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
-        <h1 className="text-center mb-4">Witaj na GeoGems!</h1>
+        <h1 className="text-center mb-4">
+          Witaj na GeoGems!
+        </h1>
         <p className="text-center mb-5">
           GeoGems to miejsce, gdzie możesz odkrywać i zapisywać swoje ulubione miejsca na mapie. Skorzystaj z prostych kroków poniżej, aby rozpocząć podróż!
         </p>
