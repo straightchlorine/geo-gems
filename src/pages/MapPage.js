@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'; // Import toast from react-toastify
 
 import 'leaflet/dist/leaflet.css';
 import 'react-toastify/dist/ReactToastify.css';
+import './css/map.css'
 
 // Fix for default icon markers, on Firefox there
 // seems to be a problem.
