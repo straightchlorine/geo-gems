@@ -23,7 +23,7 @@ function HomePage() {
           <h3 className='text-center mb-5 mt-5'>Warto wiedzieć, że GeoGems wspiera geolokalizację!</h3>
 
           Po wejściu do 'Mapy' zostaniesz zapytany o zgodę do pobrania Twojej lokalizacji. Jeśli się zgodzisz,
-          mapa automatycznie wyświetli Twoją lokalizację. <strong>Może to potrwać kilka chwil, więc prosimy o cierpliwość!</strong>
+          mapa automatycznie wyświetli Twoją okolicę. <strong>Może to potrwać kilka chwil, więc prosimy o cierpliwość!</strong>
         </div>
 
       <p className="text-center mt-4 mb-4">
