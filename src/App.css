@@ -17,6 +17,15 @@ code {
   margin: 0 auto;
 }
 
+.navbar-brand {
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+#icon {
+  margin-right: 10px;
+}
+
 .main-container {
   display: flex;
   padding-top: 10px;
@@ -93,4 +102,8 @@ input {
 
 .saved-marker:hover {
   background-color: #e2e6ea;
+}
+
+#submit-button {
+  margin-top: 20px;
 }
