@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import L from 'leaflet';
 
-import 'leaflet/dist/leaflet.css';
 import { Form, Button } from 'react-bootstrap';
+import { toast } from 'react-toastify'; // Import toast from react-toastify
+
+import 'leaflet/dist/leaflet.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Fix for default icon markers, on Firefox there
 // seems to be a problem.
@@ -26,6 +29,27 @@ const MapPage = () => {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const [markerName, setMarkerName] = useState('');
   const [map, setMap] = useState(null);
+
+  const handleGeolocation = (map) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          if (map) {
+            map.setView([latitude, longitude], 12); // You can adjust the zoom level (12 in this case)
+            toast.success('Geolokacjizacja zakończona sukcesem!');
+          }
+        },
+        (error) => {
+          console.error('Error getting geolocation:', error.message);
+          toast.error('Niestety, podczas geolokalizacji wystąpiły problemy...');
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by your browser or map is not initialized.');
+      toast.error('Twoja przeglądarka nie obsługuję geolokalizacji.');
+    }
+  };
 
   useEffect(() => {
     // Initialize the map
@@ -66,26 +90,8 @@ const MapPage = () => {
     localStorage.setItem('markers', JSON.stringify(basicMarkers));
   }, [markers]);
 
-  const handleGeolocation = () => {
-    if (navigator.geolocation && map) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          if (map) {
-            map.setView([latitude, longitude], 12); // You can adjust the zoom level (12 in this case)
-          }
-        },
-        (error) => {
-          console.error('Error getting geolocation:', error.message);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by your browser or map is not initialized.');
-    }
-  };
-
   useEffect(() => {
-    handleGeolocation(); // Automatically ask for geolocation when the component mounts
+    handleGeolocation(map); // Automatically ask for geolocation when the map is initialized
   }, [map]);
 
   const handleMapClick = (e) => {
@@ -100,11 +106,17 @@ const MapPage = () => {
   const handleMarkerAppend = () => {
     if (!map) return;
 
+    if (coordinates.lat === null || coordinates.lng === null) {
+        // Notify the user that no location has been chosen using toast
+        toast.error('Aby dodać lokalizację, najpierw kliknij na mapę!')
+        return;
+    }
+
     // Create a new marker and add it to the map
     const marker = L.marker([coordinates.lat, coordinates.lng]).addTo(map);
 
     // Create a default name for the marker if no name is provided
-    const defaultName = `Marker ${markers.length + 1}`;
+    const defaultName = `📍 Perełka ${markers.length + 1}`;
     marker.bindPopup(markerName || defaultName);
 
     // Update the markers state with the new marker and its name
@@ -116,6 +128,9 @@ const MapPage = () => {
 
     // Clear the input after adding the marker
     setMarkerName('');
+
+    // Notify the user with a success toast
+    toast.success(`Znacznik "${markerName || defaultName}" został pomyślnie dodany do ulubionych!`);
   };
 
   const handleMarkerClick = (markerObj) => {
@@ -123,7 +138,7 @@ const MapPage = () => {
 
     // Center the map on the clicked marker
     const { marker } = markerObj;
-    map.setView(marker.getLatLng(), map.getZoom());
+    map.setView(marker.getLatLng(), 10);
   };
 
 return (
@@ -142,16 +157,16 @@ return (
           <div className="coordinates-info">
             <div>
               <div>Szerokość geograficzna: </div>
-              <div>{coordinates.lat ? Math.round(coordinates.lat * 100) / 100 : '-'}</div>
+              <div><strong>{coordinates.lat ? Math.round(coordinates.lat * 100) / 100 : '❌'}</strong></div>
             </div>
             <div>
               <div>Długość geograficzna: </div>
-              <div>{coordinates.lng ? Math.round(coordinates.lng * 100) / 100 : '-'}</div>
+              <div><strong>{coordinates.lng ? Math.round(coordinates.lng * 100) / 100 : '❌'}</strong></div>
             </div>
           </div>
 
           <Button id='favouritesButton' variant="primary" type="button" onClick={handleMarkerAppend}>
-            Dodaj do ulubionych!
+            &#128149; Dodaj do ulubionych! &#128149;
           </Button>
 
         </Form>
