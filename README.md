@@ -1,6 +1,6 @@
-## GeoGems
+# GeoGems
 
-### README.md in progress
+### Please note that the application is entirely in Polish as it is an assignment for the university.
 
 In order to use application you can either clone this repository and run
 
@@ -14,4 +14,7 @@ In order to actually use the application, it is recommended as per [React documm
 `npm install -g serve`
 `serve -s build`
 
-Thanks to that you will start your own web server along with the application.
+
+[![GeoGems][screenshot]]()
+
+[screenshot]: img/map-screen.png
